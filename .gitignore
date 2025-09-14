@@ -49,3 +49,15 @@ dev.db-journal
 
 # prisma
 /src/generated/prisma
+
+# Ignore problematic upload files that can break builds
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/sample.txt
+!public/uploads/document.pdf
+!public/uploads/image.jpg
+
+# Ignore specific problematic patterns
+public/uploads/*eval*
+public/uploads/*script*
+public/uploads/*compile*
