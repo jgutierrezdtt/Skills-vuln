@@ -61,20 +61,25 @@ export async function POST(request: NextRequest) {
     });
 
     return responseWithCookie;
-  } catch (error: any) {
-    console.error('Login API error:', error);
+      } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    const errorName = error instanceof Error ? error.name : 'Error';
+    
+    // ❌ VULNERABILIDAD: Exposición de información de error detallada
+    console.error('🚨 Login Error Details:', {
+      error: errorMessage,
+      timestamp: new Date().toISOString(),
+      stack: errorStack,
+      name: errorName,
+      // ❌ Información sensible en logs
+      attempt: 'failed_login',
+      ip: 'exposed_in_logs'
+    });
 
-    // Expose internal error details - VULNERABLE!
-    const response: ApiResponse = {
-      success: false,
-      error: error.message,
-      debug: {
-        stack: error.stack,
-        name: error.name,
-        timestamp: new Date().toISOString(),
-      }
-    };
-
-    return NextResponse.json(response, { status: 500 });
+    return NextResponse.json({
+      error: 'Login failed',
+      details: errorMessage,
+      vulnerability: 'Error information exposure'
+    }, { status: 500 });
   }
-}

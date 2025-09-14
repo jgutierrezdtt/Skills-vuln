@@ -94,7 +94,7 @@ export class NoteRepository {
         `;
         
         console.log('Search query:', query); // Logs query
-        const result = await executeRawQuery(query) as any[];
+        const result = await executeRawQuery(query) as Note[];
         return result;
       }
       
@@ -152,7 +152,7 @@ export class NoteRepository {
         WHERE n.id = '${id}'
       `;
       
-      const result = await executeRawQuery(query) as any[];
+      const result = await executeRawQuery(query) as Note[];
       return result[0] || null;
     } catch (error) {
       console.error('Get note error:', error);

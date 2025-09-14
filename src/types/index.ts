@@ -28,20 +28,20 @@ export interface UserSession {
   expiresAt: Date;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
   // Debug info exposed in production - VULNERABLE!
   debug?: {
     query?: string;
-    params?: any;
+    params?: unknown;
     stack?: string;
     timestamp?: string;
     loginTime?: string;
     name?: string;
     userAgent?: string;
-    [key: string]: any; // Allow any debug properties
+    [key: string]: unknown; // Allow any debug properties
   };
 }
 

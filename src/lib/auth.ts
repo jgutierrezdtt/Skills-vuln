@@ -21,7 +21,7 @@ export const generateToken = (user: User): string => {
   });
 };
 
-export const verifyToken = (token: string): any => {
+export const verifyToken = (token: string): unknown => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     console.log('Token decoded:', decoded); // Logs token content - VULNERABLE!
