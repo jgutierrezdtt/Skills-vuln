@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       },
       debug: {
         loginTime: new Date().toISOString(),
-        userAgent: request.headers.get('user-agent'),
+        userAgent: request.headers.get('user-agent') || 'unknown',
       }
     };
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     });
 
     return responseWithCookie;
-      } catch (error: unknown) {
+  } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : undefined;
     const errorName = error instanceof Error ? error.name : 'Error';
@@ -83,3 +83,4 @@ export async function POST(request: NextRequest) {
       vulnerability: 'Error information exposure'
     }, { status: 500 });
   }
+}

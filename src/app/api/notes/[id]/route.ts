@@ -5,9 +5,10 @@ import { ApiResponse } from '@/types';
 // Vulnerable individual note operations
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
     const { id } = params;
 
     // Log request details - VULNERABLE!
@@ -66,9 +67,10 @@ export async function GET(
 // Update note without ownership check - VULNERABLE!
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
     const { id } = params;
     const body = await request.json();
 
@@ -122,9 +124,10 @@ export async function PUT(
 // Delete note without ownership check - VULNERABLE!
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
     const { id } = params;
 
     console.log('Delete note request:', {

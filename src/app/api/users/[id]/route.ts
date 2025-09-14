@@ -5,9 +5,10 @@ import { ApiResponse } from '@/types';
 // Get user by ID - no authorization check
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await props.params;
     const { id } = params;
 
     console.log('Get user by ID request:', {
