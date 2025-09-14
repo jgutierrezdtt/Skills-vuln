@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
+    "build:turbo": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
@@ -13,7 +14,8 @@
     "db:reset": "prisma db push --force-reset && npm run db:seed",
     "db:studio": "prisma studio",
     "setup:local": "npm run db:generate && npm run db:push && npm run db:seed",
-    "setup:production": "npm run db:generate && npm run db:push && npm run db:seed"
+    "setup:production": "npm run db:generate && npm run db:push && npm run db:seed",
+    "vercel-build": "npm run db:generate && next build"
   },
   "dependencies": {
     "@prisma/client": "^6.16.0",
