@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isLabModeEnabled, getLabDisabledResponse, logLabActivity } from '@/lib/lab-helpers';
 
 // Lab mode XSS demonstration
 export async function GET(request: NextRequest) {
-  // Check if lab mode is enabled
-  if (process.env.LAB_MODE !== 'true') {
-    return NextResponse.json({ error: 'Lab mode disabled' }, { status: 403 });
+  // ❌ VULNERABILIDAD: Verificación débil de lab mode
+  if (!isLabModeEnabled()) {
+    return NextResponse.json(getLabDisabledResponse(), { status: 403 });
   }
 
   try {
     const { searchParams } = new URL(request.url);
     const userInput = searchParams.get('input') || '';
     const reflection = searchParams.get('reflect') === 'true';
+
+    // ❌ VULNERABILIDAD: Log de actividad vulnerable
+    logLabActivity('XSS', userInput);
 
     // Generate vulnerable HTML that reflects user input without escaping
     const vulnerableHtml = `

@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeRawQuery } from '@/lib/db';
+import { isLabModeEnabled, getLabDisabledResponse, logLabActivity } from '@/lib/lab-helpers';
 
 // Lab mode SQL injection demonstration - EXTREMELY VULNERABLE!
 export async function GET(request: NextRequest) {
-  // Check if lab mode is enabled
-  if (process.env.LAB_MODE !== 'true') {
-    return NextResponse.json({ error: 'Lab mode disabled' }, { status: 403 });
+  // ❌ VULNERABILIDAD: Lógica débil para verificar lab mode
+  if (!isLabModeEnabled()) {
+    return NextResponse.json(getLabDisabledResponse(), { status: 403 });
   }
 
   try {
     const { searchParams } = new URL(request.url);
     const userInput = searchParams.get('search') || '';
+
+    // ❌ VULNERABILIDAD: Log de actividad vulnerable
+    logLabActivity('SQL Injection', userInput);
 
     // VULNERABLE: Direct SQL injection example
     const vulnerableQuery = `SELECT * FROM users WHERE email LIKE '%${userInput}%'`;
