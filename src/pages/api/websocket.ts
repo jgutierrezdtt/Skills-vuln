@@ -24,7 +24,7 @@ const users = [
 
 // Mensajes privados simulados (solo accesibles para administradores)
 const privateMessages = [
-  { id: 1, from: 'system', to: 'admin', content: 'Clave API del sistema: sk_live_51Hb9xyXYZ123456789' },
+  { id: 1, from: 'system', to: 'admin', content: 'Clave API del sistema: sk_test_example_key_not_real_12345' },
   { id: 2, from: 'admin', to: 'system', content: 'Configuración actualizada con éxito' },
   { id: 3, from: 'system', to: 'admin', content: 'Backup programado para las 3:00 AM' }
 ];
