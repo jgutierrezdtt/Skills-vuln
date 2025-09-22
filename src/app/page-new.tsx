@@ -17,6 +17,34 @@ export default function Home() {
       description: "Demuestra ataques XSS y ejecución de scripts maliciosos"
     },
     { 
+      name: "DOM-based XSS", 
+      icon: "🔍", 
+      endpoint: "/lab/dom-xss?name=<script>alert('DOM XSS')</script>", 
+      severity: "high",
+      description: "Vulnerabilidad XSS que ocurre completamente en el navegador"
+    },
+    { 
+      name: "WebSocket Inseguro", 
+      icon: "🔌", 
+      endpoint: "/lab/websocket", 
+      severity: "high",
+      description: "Vulnerabilidades en comunicación en tiempo real con WebSockets"
+    },
+    { 
+      name: "Clickjacking", 
+      icon: "🖱️", 
+      endpoint: "/lab/clickjacking", 
+      severity: "medium",
+      description: "Ataques UI redressing donde se engaña al usuario para que haga clic en elementos ocultos"
+    },
+    { 
+      name: "Client-Side Storage Leakage", 
+      icon: "🔋", 
+      endpoint: "/lab/client-storage", 
+      severity: "medium",
+      description: "Filtración de datos sensibles almacenados en localStorage, sessionStorage y cookies"
+    },
+    { 
       name: "Broken Authentication", 
       icon: "🔓", 
       endpoint: "/api/auth/login", 
@@ -54,9 +82,9 @@ export default function Home() {
     { 
       name: "Cross-Site Request Forgery (CSRF)", 
       icon: "🔄", 
-      endpoint: "/api/notes", 
+      endpoint: "/lab/csrf", 
       severity: "medium",
-      description: "Ataques CSRF en formularios y acciones"
+      description: "Ataques CSRF con activación/desactivación de protecciones"
     }
   ];
 

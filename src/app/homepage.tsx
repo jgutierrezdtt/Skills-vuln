@@ -84,6 +84,21 @@ export default function Home() {
               <h4 className="font-semibold">CSP Demo</h4>
               <p className="text-sm text-gray-600">Content Security Policy testing</p>
             </a>
+            
+            <Link href="/lab/websocket" className="block bg-white p-4 rounded border border-orange-300 hover:bg-orange-50">
+              <h4 className="font-semibold">WebSocket Inseguro</h4>
+              <p className="text-sm text-gray-600">Vulnerabilidades en comunicación en tiempo real</p>
+            </Link>
+            
+            <Link href="/lab/clickjacking" className="block bg-white p-4 rounded border border-orange-300 hover:bg-orange-50">
+              <h4 className="font-semibold">Clickjacking</h4>
+              <p className="text-sm text-gray-600">Ataques de redirección de UI y superposición de frames</p>
+            </Link>
+            
+            <Link href="/lab/client-storage" className="block bg-white p-4 rounded border border-orange-300 hover:bg-orange-50">
+              <h4 className="font-semibold">Client-Side Storage Leakage</h4>
+              <p className="text-sm text-gray-600">Exposición de datos sensibles en almacenamiento del cliente</p>
+            </Link>
           </div>
         </div>
 

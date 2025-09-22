@@ -16,6 +16,62 @@ export default function Home() {
       severity: "high",
       description: "Demuestra ataques XSS y ejecución de scripts maliciosos"
     },
+    { 
+      name: "DOM-based XSS", 
+      icon: "🔍", 
+      endpoint: "/lab/dom-xss?name=<script>alert('DOM XSS')</script>", 
+      severity: "high",
+      description: "Vulnerabilidad XSS que ocurre completamente en el navegador"
+    },
+    { 
+      name: "Cross-Site Request Forgery", 
+      icon: "🔄", 
+      endpoint: "/lab/csrf", 
+      severity: "high",
+      description: "Ataques CSRF con activación/desactivación de protecciones"
+    },
+    { 
+      name: "Subresource Integrity", 
+      icon: "🛡️", 
+      endpoint: "/lab/sri", 
+      severity: "medium",
+      description: "Vulnerabilidad por omisión de verificación de integridad en recursos externos"
+    },
+    { 
+      name: "JSON Injection", 
+      icon: "📦", 
+      endpoint: "/lab/json-injection", 
+      severity: "high",
+      description: "Procesamiento inseguro de datos JSON que permite manipulación de objetos"
+    },
+    { 
+      name: "Prototype Pollution", 
+      icon: "🧬", 
+      endpoint: "/lab/prototype-pollution", 
+      severity: "high",
+      description: "Manipulación del prototipo de objetos JavaScript que afecta toda la aplicación"
+    },
+    { 
+      name: "HTML5 postMessage", 
+      icon: "💬", 
+      endpoint: "/lab/post-message", 
+      severity: "high",
+      description: "Comunicación insegura entre ventanas/iframes que permite ataques de origen cruzado"
+    },
+    { 
+      name: "Clickjacking", 
+      icon: "🖱️", 
+      endpoint: "/lab/clickjacking", 
+      severity: "medium",
+      description: "Ataques UI redressing donde se engaña al usuario para que haga clic en elementos ocultos"
+    },
+    { 
+      name: "Client-Side Storage Leakage", 
+      icon: "🔋", 
+      endpoint: "/lab/client-storage", 
+      severity: "medium",
+      description: "Filtración de datos sensibles almacenados en localStorage, sessionStorage y cookies"
+    },
     {
       name: "XML External Entity (XXE)",
       icon: "📄",
